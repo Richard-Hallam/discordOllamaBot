@@ -1,61 +1,74 @@
+
+
 // Import necessary discord.js classes
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const { token } = require('./config.json');
+import 'ollama';
+import 'node:fs';
+import ollama from 'ollama' ;
+import token from './config.json' assert {type: 'json'};
 
-// Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+let prompt = 'reply with You have to give me a prompt to generate from!';
 
-// Log in client
-client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
+const chatModel = 'llama3.2:3b';
 
-client.commands = new Collection();
-
-// Load commands from a directory (assuming you have a commands folder)
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-	const filePath = path.join(commandsPath, file);
-	const command = require(filePath);
-
-	// Set a new item in the Collection with the key as the command name and the value as the exported module
-	if ('data' in command && 'execute' in command) {
-		client.commands.set(command.data.name, command);
-	} else {
-		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-	}
+async function generateResponse(prompt){
+  const result = await ollama.generate({
+    model:chatModel,
+    prompt:prompt,
+    steam:false,
+  })
+  console.log( response.message)
+  return response;
 }
 
-// Handle message-based commands
-client.on("messageCreate", msg => {
-	console.log(msg);
-	if (msg.author.bot) return; // Ignore bot messages
+import {Client, Events, GatewayIntentBits, Collection} from 'discord.js';
+import path from 'node:path'
+import { Ollama } from 'ollama';
+import { response } from 'express';
+import { assert } from 'node:console';
 
-	if (msg.content.includes("ping")) {
-		console.log('pong')
-		msg.reply("pong");
-	}
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+
+// Log in client and respond when ready
+client.once(Events.ClientReady, (readyClient) => {
+  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+// Log in client and respond when ready
+client.once(Events.ClientReady, (readyClient) => {
+  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
-// Handle slash commands
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return; // Ignore non-slash command interactions
+client.on('messageCreate', async (msg) => {
+  // if (!msg.content.trim()) return; // Ignore empty messages
 
-	const command = client.commands.get(interaction.commandName);
+  // if (msg.author.bot) return; // Ignore bot messages
+client.on('messageCreate', async (msg) => {
+  // if (!msg.content.trim()) return; // Ignore empty messages
 
-	if (!command) return;
+  // if (msg.author.bot) return; // Ignore bot messages
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(`Error executing ${interaction.commandName}`);
-		interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
+  // if (msg.content.toLowerCase().includes('ping')) {
+    console.log(1)
+  //const reply = await generateResponse(msg.content)
+    //console.log(await generateResponse(msg.content))
+    //let replyToDC = msg.reply(generateResponse(prompt));
+    let replyToDC = console.log(await generateResponse(prompt));
+  
 });
+
+
+  // if (msg.content.toLowerCase().includes('ping')) {
+    console.log(1)
+  //const reply = await generateResponse(msg.content)
+    //console.log(await generateResponse(msg.content))
+    //let replyToDC = msg.reply(generateResponse(prompt));
+    let replyToDC = console.log(await generateResponse(prompt));
+  
+});
+
+
 
 // Log in to Discord with token
-client.login(token);
+client.login(token.token);
+client.login(token.token);
+
+//append return questions in the following format before the prompt
+//append return questions in the following format before the prompt
