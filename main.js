@@ -8,9 +8,16 @@ import { response } from 'express';
 import { assert } from 'node:console';
 
 
-
+//change this to use a different model
 const chatModel = 'llama3.2:3b';
 
+
+/**
+ * creates ollama instance, sends request and awaits response. Returns assembled response
+ * @param {string} prompt 
+ * @param {string} chatModel 
+ * @returns string
+ */
 async function generateResponse(prompt, chatModel){
   const ollama = new Ollama({ host: 'http://127.0.0.1:11434' })
   const message = {role: 'user', content: prompt}
@@ -32,10 +39,13 @@ async function generateResponse(prompt, chatModel){
 
 
 
-
+//client for discord
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
 
+/**
+ * listens for discord message then passes message content to generateResponse()
+ */
 client.on("ready", () => {
   console.log(`logged in as ${client.user.tag}`)
 })
