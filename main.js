@@ -31,9 +31,9 @@ function splitStringOver2000Characters(stringToCheck) {
   stringToCheck = stringToCheck;
   while (stringToCheck.length > 1999) {
     arrayToReturn.push(stringToCheck.slice(0, 1999));
+    stringToCheck = stringToCheck.slice(2000);
   }
   arrayToReturn.push(stringToCheck.slice(0, 1999));
-  stringToCheck = stringToCheck.slice(2000);
   return arrayToReturn;
 }
 
@@ -49,9 +49,9 @@ async function generateResponse(prompt, chatModel) {
   const message = { role: 'user', content: prompt }
   const result = await ollama.chat({ model: chatModel, messages: [message], stream: false })
   if (result.message.content.length > 1900) {
-    // const responseParts = splitStringOver2000Characters(result.message.content);
-    // return responseParts;
-    return 'message too long to parse'
+     const responseParts = splitStringOver2000Characters(result.message.content);
+     return responseParts;
+     //return 'message too long to parse'
   } else {
     return result.message.content;
   }
@@ -82,7 +82,7 @@ async function getMessageFromDiscord(msg) {
       let chatResponse = await generateResponse(msg.content, chatModel)
       if (typeof chatResponse === 'string') {
         generateResponse(msg.content, chatModel).then(returnString => (msg.reply(returnString)));
-      } else if (chatResponse.isArray()){
+      } else if (Array.isArray(chatResponse)){
         for (let part of chatResponse){
           msg.reply(part);
           await sleep(3500);
