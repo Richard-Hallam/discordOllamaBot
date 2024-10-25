@@ -2,7 +2,7 @@ import 'node:fs';
 //import ollama from 'ollama' ;
 import token from './config.json' assert {type: 'json'};
 import { Client, Events, GatewayIntentBits, Collection, Message } from 'discord.js';
-import path from 'node:path'
+import path, { resolve } from 'node:path'
 import { Ollama } from 'ollama';
 import { response } from 'express';
 import { assert } from 'node:console';
@@ -85,12 +85,21 @@ async function getMessageFromDiscord(msg) {
       } else if (chatResponse.isArray()){
         for (let part of chatResponse){
           msg.reply(part);
+          await sleep(3500);
         }
       }
     }
   }
 }
 
+
+/**
+ * takes a time in ms and pauses execution for the duration but 
+ * needs passing to async function.
+ */
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 
 
