@@ -1,23 +1,36 @@
 import 'node:fs';
-//import ollama from 'ollama' ;
 import token from './config.json' assert {type: 'json'};
 import { Client, Events, GatewayIntentBits, Collection, Message } from 'discord.js';
-import path, { resolve } from 'node:path'
 import { Ollama } from 'ollama';
-import { response } from 'express';
-import { assert } from 'node:console';
-import { type } from 'node:os';
+import prompt from './commands/prompt';
 
 
+/**
+ * Ollama consts and setup
+ */
 //change this to use a different model
 const chatModel = 'llama3.2:3b';
 
 //initialises ollama
 const ollama = new Ollama({ host: 'http://127.0.0.1:11434' })
 
+/***
+ * Discord setup
+ */
 //client for discord
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
+//stores commands for the client
+client.commands = new Collection();
+
+//sets filepath for commands folder
+const foldersPath = path.join(__dirname, 'commands');
+
+
+/**
+ * fetches commands from storage.
+ *
+ */
 
 
 /**

@@ -20,5 +20,6 @@ you also need to make a file called config.json containing your discord api key.
 - Discord slash commands.
 - chat context for the llm.
 - Return of messages longer than 2000 characters. Current limit imposed by discord api.
+- Handle the splitting of code blocks in returns
 
 
