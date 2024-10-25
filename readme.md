@@ -14,11 +14,12 @@ you also need to make a file called config.json containing your discord api key.
 
 - Model selection
 - Ability to send message to llm and get a response in discord.
+- Ability to handle responses longer than the discord api limit of 2000 characters.
 
 ## Feature to be implimented
 
 - Discord slash commands.
 - chat context for the llm.
-- Return of messages longer than 2000 characters. Current limit imposed by discord api.
+- Ability to select models using a slash command
 
 
