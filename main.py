@@ -75,9 +75,21 @@ async def prompt(ctx, *, msg):
         await ctx.send(f"{model} pull complete")
 
 
-@bot.command(description="sets role of the model")
+@bot.command(description="sets up the role for the LLM")
 async def setrole(ctx, *, role):
-    pass
+    user_id = ctx.author.id
+    if user_id not in conversation_history:
+        conversation_history[user_id] = []
+
+    # Add the role to the conversation history
+    conversation_history[user_id].insert(0, {
+        'role': 'system',
+        'content': role,
+    })
+    await ctx.send(f"Role set: {role}")
+
+
+    
 
 # Add bot.run with your token
 bot.run(getApiKey('config.txt'))
