@@ -16,8 +16,8 @@ def split_long_response(response_to_process):
     print(response_to_process)
     response = str(response_to_process)
     while len(response_to_process) > 2000:
-        split_response.append(response_to_process[0:2000])
-        response_to_process = response_to_process[2001:response_to_process_length]
+        split_response.append(response_to_process[0:1999])
+        response_to_process = response_to_process[1999:response_to_process_length]
     split_response.append(response_to_process)
     return split_response
 
@@ -60,11 +60,24 @@ async def prompt(ctx, *, msg):
             'role': 'assistant',
             'content': response,
         })
-        await ctx.send(response)
+        print(response)
+        if len(response) > 2000:
+            split_response = split_long_response(response)
+            for i in split_response:
+                print(len(i))
+                await ctx.send(i)
+                time.sleep(10)
+        if len(response) < 2000:
+            await ctx.send(response)
     except CommandInvokeError:
         await ctx.send('Model not pulled, pulling now. Prompt will be unavailable during this time.')
         await ollama.pull(model)
         await ctx.send(f"{model} pull complete")
+
+
+@bot.command(description="sets role of the model")
+async def setrole(ctx, *, role):
+    pass
 
 # Add bot.run with your token
 bot.run(getApiKey('config.txt'))
