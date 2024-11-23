@@ -75,11 +75,13 @@ async def prompt(ctx, *, msg):
         await ctx.send(f"{model} pull complete")
 
 
-@bot.command(description="sets up the role for the LLM")
+@bot.command(description="sets up the role for the LLM")#to do clear chat history on set role. Or have different history for different roles
 async def setrole(ctx, *, role):
     user_id = ctx.author.id
     if user_id not in conversation_history:
         conversation_history[user_id] = []
+    if user_id in conversation_history:
+        conversation_history[user_id].clear()
 
     # Add the role to the conversation history
     conversation_history[user_id].insert(0, {
