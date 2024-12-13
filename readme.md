@@ -14,10 +14,11 @@ To deploy this project download it and run main.py after putting your api key in
 - Ability to send message to llm and get a response in discord.
 - context for each user
 - Ability to handle responses longer than the discord api limit of 2000 characters.
+- Ability to select models using a slash command
 
 ## Feature to be implimented
 
 - persistant context between bot restarts
-- Ability to select models using a slash command
+
 
 
