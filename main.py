@@ -3,12 +3,16 @@ from discord.ext import commands
 from discord.ext.commands import CommandInvokeError
 import ollama
 import time
+import json
+import sqlite3
+
 
 def getApiKey(filename):
     with open(filename) as f:
         apiKey = f.read()
         print(apiKey)
     return apiKey
+
 
 def split_long_response(response_to_process):
     split_response = []
@@ -20,6 +24,7 @@ def split_long_response(response_to_process):
         response_to_process = response_to_process[1999:response_to_process_length]
     split_response.append(response_to_process)
     return split_response
+
 
 async def get_response(messages, modelToUse):
     """Passes command content to ollama
@@ -38,9 +43,11 @@ model = 'llama3.2'
 # Dictionary to store conversation history for each user
 conversation_history = {}
 
+
 @bot.command(description="tests bot is getting commands")
 async def ping(ctx):
     await ctx.send('pong')
+
 
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
@@ -75,7 +82,7 @@ async def prompt(ctx, *, msg):
         await ctx.send(f"{model} pull complete")
 
 
-@bot.command(description="sets up the role for the LLM")#to do clear chat history on set role. Or have different history for different roles
+@bot.command(description="sets up the role for the LLM")
 async def setrole(ctx, *, role):
     user_id = ctx.author.id
     if user_id not in conversation_history:
@@ -90,8 +97,6 @@ async def setrole(ctx, *, role):
     })
     await ctx.send(f"Role set: {role}")
 
-
-    
 
 # Add bot.run with your token
 bot.run(getApiKey('config.txt'))
