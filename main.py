@@ -10,7 +10,6 @@ import sqlite3
 def getApiKey(filename):
     with open(filename) as f:
         apiKey = f.read()
-        print(apiKey)
     return apiKey
 
 
@@ -30,16 +29,22 @@ async def get_response(messages, modelToUse):
     """Passes command content to ollama
        To implement models"""
     print(modelToUse)
-    response = ollama.chat(model=modelToUse, messages=messages)
+    try:
+        response = ollama.chat(model=modelToUse, messages=messages)
+        #print (response)
+    except:
+        print("model not found. Contact admin to add it. selecting default model")
+        global model 
+        model = 'llama3.2'
     return response['message']['content']
+
 
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='>', intents=intents)
 
 # Define the model variable
-#model = 'llama3.2'  
-model = 'deepseek-coder-v2:latest '
+model = 'llama3.2'  
 
 # Dictionary to store conversation history for each user
 conversation_history = {}
@@ -73,23 +78,20 @@ async def prompt(ctx, *, msg):
         'content': msg,
     })
 
-    try:
-        response = await get_response(conversation_history[user_id], model)
-        conversation_history[user_id].append({
-            'role': 'assistant',
-            'content': response,
-        })
-        print(response)
-        if len(response) > 2000:
-            split_response = split_long_response(response)
-            for i in split_response:
-                print(len(i))
-                await ctx.send(i)
-                time.sleep(10)
-        if len(response) < 2000:
-            await ctx.send(response)
-    except CommandInvokeError:
-        await ctx.send('Model not pulled, contact an admin to add the model')
+    response = await get_response(conversation_history[user_id], model)
+    conversation_history[user_id].append({
+        'role': 'assistant',
+        'content': response,
+    })
+    print(response)
+    if len(response) > 2000:
+        split_response = split_long_response(response)
+        for i in split_response:
+            print(len(i))
+            await ctx.send(i)
+        time.sleep(10)
+    if len(response) < 2000:
+        await ctx.send(response)
 
 
 @bot.command(description="sets up the role for the LLM")
