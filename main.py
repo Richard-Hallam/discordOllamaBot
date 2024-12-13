@@ -10,7 +10,6 @@ import sqlite3
 def getApiKey(filename):
     with open(filename) as f:
         apiKey = f.read()
-        print(apiKey)
     return apiKey
 
 
@@ -30,8 +29,18 @@ async def get_response(messages, modelToUse):
     """Passes command content to ollama
        To implement models"""
     print(modelToUse)
-    response = ollama.chat(model=modelToUse, messages=messages)
+    try:
+        response = ollama.chat(model=modelToUse, messages=messages)
+        #print (response)
+    except Exception as e:
+        print("model not found. Contact admin to add it. selecting default model")
+        global model 
+        model = 'llama3.2'
+        print(e)
+        response = {'model': model, 'message': {'role': 'assistant', 'content': 'model not found. Contact admin to add it. selecting default model'}}
+        return response['message']['content']
     return response['message']['content']
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -49,6 +58,17 @@ async def ping(ctx):
     await ctx.send('pong')
 
 
+@bot.command(description="changes the model")
+async def changemodel(ctx, *, model_name):
+    global model
+    model = model_name
+    try:
+         get_response("test", model)
+         await ctx.send(f"Model changed to {model}")
+    except:
+        ctx.send(f"Model {model} not found")
+    
+
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
     user_id = ctx.author.id
@@ -61,25 +81,20 @@ async def prompt(ctx, *, msg):
         'content': msg,
     })
 
-    try:
-        response = await get_response(conversation_history[user_id], model)
-        conversation_history[user_id].append({
-            'role': 'assistant',
-            'content': response,
-        })
-        print(response)
-        if len(response) > 2000:
-            split_response = split_long_response(response)
-            for i in split_response:
-                print(len(i))
-                await ctx.send(i)
-                time.sleep(10)
-        if len(response) < 2000:
-            await ctx.send(response)
-    except CommandInvokeError:
-        await ctx.send('Model not pulled, pulling now. Prompt will be unavailable during this time.')
-        await ollama.pull(model)
-        await ctx.send(f"{model} pull complete")
+    response = await get_response(conversation_history[user_id], model)
+    conversation_history[user_id].append({
+        'role': 'assistant',
+        'content': response,
+    })
+    print(response)
+    if len(response) > 2000:
+        split_response = split_long_response(response)
+        for i in split_response:
+            print(len(i))
+            await ctx.send(i)
+        time.sleep(10)
+    if len(response) < 2000:
+        await ctx.send(response)
 
 
 @bot.command(description="sets up the role for the LLM")
