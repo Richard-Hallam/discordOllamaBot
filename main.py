@@ -38,7 +38,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='>', intents=intents)
 
 # Define the model variable
-model = 'llama3.2'  
+#model = 'llama3.2'  
+model = 'deepseek-coder-v2:latest '
 
 # Dictionary to store conversation history for each user
 conversation_history = {}
@@ -48,6 +49,17 @@ conversation_history = {}
 async def ping(ctx):
     await ctx.send('pong')
 
+
+@bot.command(description="changes the model")
+async def changemodel(ctx, *, model_name):
+    global model
+    model = model_name
+    try:
+         get_response("test", model)
+         await ctx.send(f"Model changed to {model}")
+    except:
+        ctx.send(f"Model {model} not found")
+    
 
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
@@ -77,9 +89,7 @@ async def prompt(ctx, *, msg):
         if len(response) < 2000:
             await ctx.send(response)
     except CommandInvokeError:
-        await ctx.send('Model not pulled, pulling now. Prompt will be unavailable during this time.')
-        await ollama.pull(model)
-        await ctx.send(f"{model} pull complete")
+        await ctx.send('Model not pulled, contact an admin to add the model')
 
 
 @bot.command(description="sets up the role for the LLM")
