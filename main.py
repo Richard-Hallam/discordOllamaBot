@@ -32,10 +32,13 @@ async def get_response(messages, modelToUse):
     try:
         response = ollama.chat(model=modelToUse, messages=messages)
         #print (response)
-    except:
+    except Exception as e:
         print("model not found. Contact admin to add it. selecting default model")
         global model 
         model = 'llama3.2'
+        print(e)
+        response = {'model': model, 'message': {'role': 'assistant', 'content': 'model not found. Contact admin to add it. selecting default model'}}
+        return response['message']['content']
     return response['message']['content']
 
 
