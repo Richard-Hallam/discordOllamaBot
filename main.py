@@ -98,5 +98,11 @@ async def setrole(ctx, *, role):
     await ctx.send(f"Role set: {role}")
 
 
+@bot.command(description="clears the conversation history")
+async def clearhistory(ctx):
+    user_id = ctx.author.id
+    if user_id in conversation_history:
+        conversation_history[user_id].clear()
+        await ctx.send("Conversation history cleared")
 # Add bot.run with your token
 bot.run(getApiKey('config.txt'))
