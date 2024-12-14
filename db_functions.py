@@ -18,9 +18,11 @@ def write_conversation_history_to_db(conversation_history, db_path):
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS conversation_history
                  (user_id text, role text, content text)''')
-    for user_id, conversation in conversation_history.items():
-        for message in conversation:
-            c.execute("INSERT INTO conversation_history VALUES (?, ?, ?)", (user_id, message['role'], message['content']))
+    for entry in conversation_history:
+        user_id = entry['user_id']
+        role = entry['role']
+        content = entry['content']
+        c.execute("INSERT INTO conversation_history VALUES (?, ?, ?)", (user_id, role, content))
     conn.commit()
     conn.close()
 

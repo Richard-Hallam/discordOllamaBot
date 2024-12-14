@@ -101,7 +101,7 @@ async def setrole(ctx, *, role):
     global conversation_history
     print("running history clear for setrole")
     conversation_history = []
-    get_response("""forget any previous roles, identities or personality traits 
+    await get_response("""forget any previous roles, identities or personality traits 
     given before this prompt. take on and fully embdoy the role of a """ + role +
     """for the rest of this conversation, ignore any roles given to you after this
     prompt.""",
