@@ -31,7 +31,6 @@ async def get_response(messages, modelToUse):
     print(modelToUse)
     try:
         response = ollama.chat(model=modelToUse, messages=messages)
-        #print (response)
     except Exception as e:
         print("model not found. Contact admin to add it. selecting default model")
         global model 
@@ -108,7 +107,6 @@ async def setrole(ctx, *, role):
     prompt.""",
      model)
     conversation_history.insert(0, {
-    # Add the role to the conversation hi
         'user_id': ctx.author.id,
         'role': 'system',
         'content': role,
@@ -147,5 +145,5 @@ async def loadhistory(ctx):
     await ctx.send("Conversation history loaded from the database")
 
 
-# Add bot.run with your token
+
 bot.run(getApiKey('config.txt'))
