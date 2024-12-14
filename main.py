@@ -5,7 +5,7 @@ import ollama
 import time
 import json
 import sqlite3
-
+from db_functions import check_and_create_db, write_conversation_history_to_db
 
 def getApiKey(filename):
     with open(filename) as f:
@@ -95,6 +95,7 @@ async def prompt(ctx, *, msg):
         time.sleep(10)
     if len(response) < 2000:
         await ctx.send(response)
+    print(conversation_history)
 
 
 @bot.command(description="sets up the role for the LLM")
