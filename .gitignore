@@ -6947,3 +6947,5 @@ DCOllamaBot
 config.txt
 config.txt
 rag/.env
+bot_data.db
+
