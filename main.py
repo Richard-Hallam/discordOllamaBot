@@ -5,7 +5,7 @@ import ollama
 import time
 import json
 import sqlite3
-from db_functions import check_and_create_db, write_conversation_history_to_db
+from db_functions import check_and_create_db, write_conversation_history_to_db, read_conversation_history_from_db
 
 def getApiKey(filename):
     with open(filename) as f:
@@ -50,7 +50,7 @@ bot = commands.Bot(command_prefix='>', intents=intents)
 model = 'llama3.2'  
 
 # Dictionary to store conversation history for each user
-conversation_history = {}
+conversation_history = []
 
 
 @bot.command(description="tests bot is getting commands")
@@ -72,17 +72,16 @@ async def changemodel(ctx, *, model_name):
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
     user_id = ctx.author.id
-    if user_id not in conversation_history:
-        conversation_history[user_id] = []
 
-    # Add the new message to the conversation history
-    conversation_history[user_id].append({
+    conversation_history.append({
+        'user_id': user_id,
         'role': 'user',
         'content': msg,
     })
 
-    response = await get_response(conversation_history[user_id], model)
-    conversation_history[user_id].append({
+    response = await get_response(conversation_history, model)
+    conversation_history.append({
+        'user_id': user_id,
         'role': 'assistant',
         'content': response,
     })
@@ -95,19 +94,19 @@ async def prompt(ctx, *, msg):
         time.sleep(10)
     if len(response) < 2000:
         await ctx.send(response)
-    print(conversation_history)
 
 
-@bot.command(description="sets up the role for the LLM")
+@bot.command(description="sets up the role for the LLM")#this is broken now
 async def setrole(ctx, *, role):
     user_id = ctx.author.id
     if user_id not in conversation_history:
-        conversation_history[user_id] = []
+        conversation_history = []
     if user_id in conversation_history:
-        conversation_history[user_id].clear()
+        conversation_history.clear()
 
     # Add the role to the conversation history
-    conversation_history[user_id].insert(0, {
+    conversation_history.insert(0, {
+        'user_id': user_id,
         'role': 'system',
         'content': role,
     })
@@ -116,16 +115,31 @@ async def setrole(ctx, *, role):
 
 @bot.command(description="clears the conversation history")
 async def clearhistory(ctx):
-    user_id = ctx.author.id
-    if user_id in conversation_history:
-        conversation_history[user_id].clear()
-        await ctx.send("Conversation history cleared")
+    conversation_history.clear()
+    await ctx.send("Conversation history cleared")
 
 
 @bot.command(description="saves the conversation history to the database")
 async def savehistory(ctx):
     write_conversation_history_to_db(conversation_history, 'ollamaDCBot.db')
     await ctx.send("Conversation history saved to the database")
+
+
+@bot.command(description="Loads the conversation history from the database")
+async def loadhistory(ctx):
+    global conversation_history
+    #conversation_history['db'] = []
+    lines = read_conversation_history_from_db('ollamaDCBot.db')
+    print(type(conversation_history))
+    for line in lines:
+        print(type(line))
+        print(line)
+        conversation_history.append({
+        'user_id':'db',
+        'role': line[1],
+        'content': line[2],
+    })
+    await ctx.send("Conversation history loaded from the database")
 
 
 # Add bot.run with your token
