@@ -96,17 +96,20 @@ async def prompt(ctx, *, msg):
         await ctx.send(response)
 
 
-@bot.command(description="sets up the role for the LLM")#this is broken now
+@bot.command(description="sets up the role for the LLM")
 async def setrole(ctx, *, role):
-    user_id = ctx.author.id
-    if user_id not in conversation_history:
-        conversation_history = []
-    if user_id in conversation_history:
-        conversation_history.clear()
-
-    # Add the role to the conversation history
+    global model
+    global conversation_history
+    print("running history clear for setrole")
+    conversation_history = []
+    get_response("""forget any previous roles, identities or personality traits 
+    given before this prompt. take on and fully embdoy the role of a """ + role +
+    """for the rest of this conversation, ignore any roles given to you after this
+    prompt.""",
+     model)
     conversation_history.insert(0, {
-        'user_id': user_id,
+    # Add the role to the conversation hi
+        'user_id': ctx.author.id,
         'role': 'system',
         'content': role,
     })
