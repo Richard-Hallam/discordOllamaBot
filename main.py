@@ -1,9 +1,10 @@
+import time
+import json
+
 import discord
 from discord.ext import commands
 from discord.ext.commands import CommandInvokeError
 import ollama
-import time
-import json
 import sqlite3
 
 
@@ -63,8 +64,8 @@ async def changemodel(ctx, *, model_name):
     global model
     model = model_name
     try:
-         get_response("test", model)
-         await ctx.send(f"Model changed to {model}")
+        get_response("test", model)
+        await ctx.send(f"Model changed to {model}")
     except:
         ctx.send(f"Model {model} not found")
     
@@ -119,5 +120,7 @@ async def clearhistory(ctx):
     if user_id in conversation_history:
         conversation_history[user_id].clear()
         await ctx.send("Conversation history cleared")
+
+
 # Add bot.run with your token
 bot.run(getApiKey('config.txt'))
