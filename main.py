@@ -120,5 +120,13 @@ async def clearhistory(ctx):
     if user_id in conversation_history:
         conversation_history[user_id].clear()
         await ctx.send("Conversation history cleared")
+
+
+@bot.command(description="saves the conversation history to the database")
+async def savehistory(ctx):
+    write_conversation_history_to_db(conversation_history, 'ollamaDCBot.db')
+    await ctx.send("Conversation history saved to the database")
+
+
 # Add bot.run with your token
 bot.run(getApiKey('config.txt'))

@@ -13,9 +13,6 @@ def check_and_create_db(db_path):
         print(f"Database already exists at {db_path}")
 
 
-
-check_and_create_db(db_path)
-
 def write_conversation_history_to_db(conversation_history, db_path):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -26,3 +23,12 @@ def write_conversation_history_to_db(conversation_history, db_path):
             c.execute("INSERT INTO conversation_history VALUES (?, ?, ?)", (user_id, message['role'], message['content']))
     conn.commit()
     conn.close()
+
+
+def read_conversation_history_from_db(db_path):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("SELECT * FROM conversation_history")
+    rows = c.fetchall()
+    conn.close()
+    return rows
