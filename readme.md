@@ -15,10 +15,10 @@ To deploy this project download it and run main.py after putting your api key in
 - context for each user
 - Ability to handle responses longer than the discord api limit of 2000 characters.
 - Ability to select models using a slash command
+- persistant context between bot restarts
 
 ## Feature to be implimented
 
-- persistant context between bot restarts
 
 
 
