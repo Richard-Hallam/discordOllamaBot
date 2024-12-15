@@ -48,9 +48,11 @@ bot = commands.Bot(command_prefix='>', intents=intents)
 # Define the model variable
 model = 'llama3.2'  
 
-# Dictionary to store conversation history for each user
+# list to store conversation history for each user
 conversation_history = []
 
+#list to store the conversation history that is loaded from the database
+db_conversation_history = []
 
 @bot.command(description="tests bot is getting commands")
 async def ping(ctx):
@@ -77,8 +79,8 @@ async def prompt(ctx, *, msg):
         'role': 'user',
         'content': msg,
     })
-
-    response = await get_response(conversation_history, model)
+    combined_history = db_conversation_history + conversation_history 
+    response = await get_response(combined_history, model)
     conversation_history.append({
         'user_id': user_id,
         'role': 'assistant',
@@ -99,8 +101,10 @@ async def prompt(ctx, *, msg):
 async def setrole(ctx, *, role):
     global model
     global conversation_history
+    global db_conversation_history
     print("running history clear for setrole")
     conversation_history = []
+    db_conversation_history = []
     await get_response("""forget any previous roles, identities or personality traits 
     given before this prompt. take on and fully embdoy the role of a """ + role +
     """for the rest of this conversation, ignore any roles given to you after this
@@ -130,14 +134,12 @@ async def savehistory(ctx):
 
 @bot.command(description="Loads the conversation history from the database")
 async def loadhistory(ctx):
-    global conversation_history
-    #conversation_history['db'] = []
+    global db_conversation_history
     lines = read_conversation_history_from_db('ollamaDCBot.db')
-    print(type(conversation_history))
     for line in lines:
-        print(type(line))
-        print(line)
-        conversation_history.append({
+        # print(type(line))
+        # print(line)
+        db_conversation_history.append({
         'user_id':'db',
         'role': line[1],
         'content': line[2],
@@ -147,3 +149,6 @@ async def loadhistory(ctx):
 
 
 bot.run(getApiKey('config.txt'))
+
+
+##todo add a second list for history then combine them when prompting. 
