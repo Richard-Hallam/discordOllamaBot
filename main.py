@@ -200,6 +200,14 @@ async def listsaves(ctx):
 
     await ctx.send(f"Available save files: \n {return_string}")
 
+
+@bot.command(description="sets the save file")
+async def setsave(ctx, *, save_file):
+    global saveName
+    saveName = save_file
+    check_and_create_db(saveName)
+    await ctx.send(f"Save file set to {save_file}")
+
 bot.run(getApiKey('config.txt'))
 
 
