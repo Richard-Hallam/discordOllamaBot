@@ -49,18 +49,30 @@ bot = commands.Bot(command_prefix='>', intents=intents)
 # Define the model variable
 model = 'llama3.2'  
 
+#activates autosave
+autosave = True
+
+#name of the savefile for the role
+# saveName = 'ollamaDCBot.db'
+saveName = 'temp'
+
+
 # list to store conversation history for each user
 conversation_history = []
 
 #list to store the conversation history that is loaded from the database
 db_conversation_history = []
 
-#activates autosave
-autosave = True
+#loads data from default database on model start
+lines = read_conversation_history_from_db(saveName)
+check_and_create_db(saveName)
+for line in lines:
+    db_conversation_history.append({
+    'user_id':'db',
+    'role': line[1],
+    'content': line[2],
+})
 
-#name of the savefile for the role
-# saveName = 'ollamaDCBot.db'
-saveName = 'temp.db'
 
 #check if the database exists
 check_and_create_db(saveName)
@@ -95,12 +107,12 @@ async def prompt(ctx, *, msg):
     })
     combined_history = db_conversation_history + conversation_history 
     response = await get_response(combined_history, model)
-    response = saveName + ': ' + response
     conversation_history.append({
         'user_id': user_id,
         'role': 'assistant',
         'content': response,
     })
+    response = saveName.replace('.db', '') + ': ' + response
     if autosave:
         write_indiviual_entry_to_db(user_id, 'asistant', response, saveName)
     if len(response) > 2000:
@@ -156,8 +168,6 @@ async def loadhistory(ctx):
     global db_conversation_history
     lines = read_conversation_history_from_db(saveName)
     for line in lines:
-        # print(type(line))
-        # print(line)
         db_conversation_history.append({
         'user_id':'db',
         'role': line[1],

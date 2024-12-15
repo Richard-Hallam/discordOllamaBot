@@ -1,9 +1,11 @@
 import sqlite3
 import os
 
-db_file='temp'
 
-def check_and_create_db( db_file= db_file + '.db'):
+
+
+def check_and_create_db( db_file):
+    db_file= db_file + '.db'
     if not os.path.exists(db_file):
         conn = sqlite3.connect( db_file)
         c = conn.cursor()
@@ -16,7 +18,8 @@ def check_and_create_db( db_file= db_file + '.db'):
 
 
 
-def write_conversation_history_to_db(conversation_history,  db_file= db_file + '.db'):
+def write_conversation_history_to_db(conversation_history,  db_file):
+    db_file= db_file + '.db'
     conn = sqlite3.connect( db_file )
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS conversation_history
@@ -30,7 +33,9 @@ def write_conversation_history_to_db(conversation_history,  db_file= db_file + '
     conn.close()
 
 
-def read_conversation_history_from_db( db_file= db_file + '.db'):
+def read_conversation_history_from_db( db_file):
+    db_file= db_file + '.db'
+    print(db_file)
     conn = sqlite3.connect( db_file)
     c = conn.cursor()
     c.execute("SELECT * FROM conversation_history")
@@ -39,7 +44,8 @@ def read_conversation_history_from_db( db_file= db_file + '.db'):
     return rows
 
 
-def write_indiviual_entry_to_db(user_id, role, content,  db_file = db_file + '.db'):
+def write_indiviual_entry_to_db(user_id, role, content,  db_file):
+    db_file= db_file + '.db'
     conn = sqlite3.connect( db_file)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS conversation_history
