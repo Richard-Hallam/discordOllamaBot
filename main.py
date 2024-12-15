@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 from discord.ext.commands import CommandInvokeError
@@ -16,7 +17,6 @@ def getApiKey(filename):
 def split_long_response(response_to_process):
     split_response = []
     response_to_process_length = len(response_to_process)
-    print(response_to_process)
     response = str(response_to_process)
     while len(response_to_process) > 2000:
         split_response.append(response_to_process[0:1999])
@@ -28,7 +28,6 @@ def split_long_response(response_to_process):
 async def get_response(messages, modelToUse):
     """Passes command content to ollama
        To implement models"""
-    print(modelToUse)
     try:
         response = ollama.chat(model=modelToUse, messages=messages)
     except Exception as e:
@@ -48,18 +47,33 @@ bot = commands.Bot(command_prefix='>', intents=intents)
 # Define the model variable
 model = 'llama3.2'  
 
+#activates autosave
+autosave = True
+
+#name of the savefile for the role
+# saveName = 'ollamaDCBot.db'
+saveName = 'temp'
+
+
 # list to store conversation history for each user
 conversation_history = []
 
 #list to store the conversation history that is loaded from the database
 db_conversation_history = []
 
-#activates autosave
-autosave = False
+#loads data from default database on model start
+lines = read_conversation_history_from_db(saveName)
+check_and_create_db(saveName)
+for line in lines:
+    db_conversation_history.append({
+    'user_id':'db',
+    'role': line[1],
+    'content': line[2],
+})
 
-#name of the savefile for the role
-saveName = 'ollamaDCBot.db'
 
+#check if the database exists
+check_and_create_db(saveName)
 
 @bot.command(description="tests bot is getting commands")
 async def ping(ctx):
@@ -80,8 +94,8 @@ async def changemodel(ctx, *, model_name):
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
     user_id = ctx.author.id
-    if autosave == True:
-        write_indiviual_entry_to_db(user_id, 'user', msg, 'ollamaDCBot.db')
+    if autosave:
+        write_indiviual_entry_to_db(user_id, 'user', msg, saveName)
     conversation_history.append({
         'user_id': user_id,
         'role': 'user',
@@ -94,12 +108,11 @@ async def prompt(ctx, *, msg):
         'role': 'assistant',
         'content': response,
     })
-    if autosave == True:
-        write_indiviual_entry_to_db(user_id, 'asistant', response, 'ollamaDCBot.db')
+    if autosave:
+        write_indiviual_entry_to_db(user_id, 'asistant', response, saveName)
     if len(response) > 2000:
         split_response = split_long_response(response)
         for i in split_response:
-            print(len(i))
             await ctx.send(i)
         time.sleep(10)
     if len(response) < 2000:
@@ -140,23 +153,21 @@ async def clearhistory(ctx):
 
 @bot.command(description="saves the conversation history to the database")
 async def savehistory(ctx):
-    write_conversation_history_to_db(conversation_history, 'ollamaDCBot.db')
+    write_conversation_history_to_db(conversation_history, saveName)
     await ctx.send("Conversation history saved to the database")
 
 
 @bot.command(description="Loads the conversation history from the database")
 async def loadhistory(ctx):
     global db_conversation_history
-    lines = read_conversation_history_from_db('ollamaDCBot.db')
+    lines = read_conversation_history_from_db(saveName)
     for line in lines:
-        # print(type(line))
-        # print(line)
         db_conversation_history.append({
         'user_id':'db',
         'role': line[1],
         'content': line[2],
     })
-    await ctx.send("Conversation history loaded from the database")
+    await ctx.send(f"{saveName} loaded from the database")
 
 
 @bot.command(description="Toggles autosave")
@@ -169,6 +180,32 @@ async def autosave(ctx):
     await ctx.send(f"Autosave toggled to {autosave}")
 
 
+@bot.command(description="lists the available save files.")
+async def listsaves(ctx):
+    save_files = os.listdir()
+    db_files = []
+    for file in save_files:
+        if file.endswith('.db'):
+            file = file.replace('.db', '')
+            db_files.append(file)
+            return_string = ''
+    for file in db_files:
+        return_string += file + '\n '
+
+    await ctx.send(f"Available save files: \n {return_string}")
+
+
+@bot.command(description="sets the save file")
+async def setsave(ctx, *, save_file):
+    global saveName
+    saveName = save_file
+    check_and_create_db(saveName)
+    await ctx.send(f"Save file set to {save_file}")
+
+
+@bot.command(description="returns active save file")
+async def getsave(ctx):
+    await ctx.send(f"Active save file is {saveName}")
 
 
 bot.run(getApiKey('config.txt'))
