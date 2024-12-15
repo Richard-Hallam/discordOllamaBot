@@ -35,6 +35,7 @@ def write_conversation_history_to_db(conversation_history,  db_file):
 
 def read_conversation_history_from_db( db_file):
     db_file= db_file + '.db'
+    print(db_file)
     conn = sqlite3.connect( db_file)
     c = conn.cursor()
     c.execute("SELECT * FROM conversation_history")

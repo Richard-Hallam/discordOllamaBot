@@ -53,7 +53,7 @@ autosave = True
 #name of the savefile for the role
 # saveName = 'ollamaDCBot.db'
 saveName = 'temp'
-
+check_and_create_db(saveName)
 
 # list to store conversation history for each user
 conversation_history = []
@@ -63,7 +63,6 @@ db_conversation_history = []
 
 #loads data from default database on model start
 lines = read_conversation_history_from_db(saveName)
-check_and_create_db(saveName)
 for line in lines:
     db_conversation_history.append({
     'user_id':'db',

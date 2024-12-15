@@ -16,12 +16,13 @@ To deploy this project download it and run main.py after putting your api key in
 - Ability to handle responses longer than the discord api limit of 2000 characters.
 - Ability to select models using a slash command
 - persistant context between bot restarts
+- autosave
+- switchable save files
+- ability to list installed models
 
 ## Feature to be implimented
 
--autosave
--switchable save files
--ability to list installed models
+
 
 
 
