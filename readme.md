@@ -18,11 +18,11 @@ To deploy this project download it and run main.py after putting your api key in
 - persistant context between bot restarts
 - autosave
 - switchable save files
-- ability to list installed models
+
 
 ## Feature to be implimented
 
-
+- ability to list installed models
 
 
 
