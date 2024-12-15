@@ -203,7 +203,7 @@ async def setsave(ctx, *, save_file):
 
 
 @bot.command(description="returns active save file")
-async def getsave(ctx):
+async def getcurrentsave(ctx):
     await ctx.send(f"Active save file is {saveName}")
 
 
