@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 from discord.ext.commands import CommandInvokeError
@@ -94,6 +95,7 @@ async def prompt(ctx, *, msg):
     })
     combined_history = db_conversation_history + conversation_history 
     response = await get_response(combined_history, model)
+    response = saveName + ': ' + response
     conversation_history.append({
         'user_id': user_id,
         'role': 'assistant',
@@ -152,7 +154,7 @@ async def savehistory(ctx):
 @bot.command(description="Loads the conversation history from the database")
 async def loadhistory(ctx):
     global db_conversation_history
-    lines = read_conversation_history_from_db('ollamaDCBot.db')
+    lines = read_conversation_history_from_db(saveName)
     for line in lines:
         # print(type(line))
         # print(line)
@@ -161,7 +163,7 @@ async def loadhistory(ctx):
         'role': line[1],
         'content': line[2],
     })
-    await ctx.send("Conversation history loaded from the database")
+    await ctx.send(f"{saveName} loaded from the database")
 
 
 @bot.command(description="Toggles autosave")
@@ -174,7 +176,19 @@ async def autosave(ctx):
     await ctx.send(f"Autosave toggled to {autosave}")
 
 
+@bot.command(description="lists the available save files.")
+async def listsaves(ctx):
+    save_files = os.listdir()
+    db_files = []
+    for file in save_files:
+        if file.endswith('.db'):
+            file = file.replace('.db', '')
+            db_files.append(file)
+            return_string = ''
+    for file in db_files:
+        return_string += file + '\n '
 
+    await ctx.send(f"Available save files: \n {return_string}")
 
 bot.run(getApiKey('config.txt'))
 

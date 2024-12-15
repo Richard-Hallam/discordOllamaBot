@@ -1,23 +1,23 @@
 import sqlite3
 import os
 
-db_path='temp.db'
+db_file='temp'
 
-def check_and_create_db(db_path):
-    if not os.path.exists(db_path):
-        conn = sqlite3.connect(db_path)
+def check_and_create_db( db_file= db_file + '.db'):
+    if not os.path.exists(db_file):
+        conn = sqlite3.connect( db_file)
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS conversation_history
             (user_id text, role text, content text)''')
         conn.close()
-        return(f"Database {db_path} created.")
+        return(f"Database { db_file} created.")
     else:
-        print(f"Database  {db_path} already exists ")
+        print(f"Database  { db_file} already exists ")
 
 
 
-def write_conversation_history_to_db(conversation_history, db_path):
-    conn = sqlite3.connect(db_path)
+def write_conversation_history_to_db(conversation_history,  db_file= db_file + '.db'):
+    conn = sqlite3.connect( db_file )
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS conversation_history
                  (user_id text, role text, content text)''')
@@ -30,8 +30,8 @@ def write_conversation_history_to_db(conversation_history, db_path):
     conn.close()
 
 
-def read_conversation_history_from_db(db_path):
-    conn = sqlite3.connect(db_path)
+def read_conversation_history_from_db( db_file= db_file + '.db'):
+    conn = sqlite3.connect( db_file)
     c = conn.cursor()
     c.execute("SELECT * FROM conversation_history")
     rows = c.fetchall()
@@ -39,8 +39,8 @@ def read_conversation_history_from_db(db_path):
     return rows
 
 
-def write_indiviual_entry_to_db(user_id, role, content, db_path):
-    conn = sqlite3.connect(db_path)
+def write_indiviual_entry_to_db(user_id, role, content,  db_file = db_file + '.db'):
+    conn = sqlite3.connect( db_file)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS conversation_history
                 (user_id text, role text, content text)''')
