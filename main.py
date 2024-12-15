@@ -121,8 +121,10 @@ async def setrole(ctx, *, role):
 @bot.command(description="clears the conversation history")
 async def clearhistory(ctx):
     global conversation_history
+    global db_conversation_history
     print("running history clear")
     conversation_history = []
+    db_conversation_history = []
     await ctx.send("Conversation history cleared")
 
 
