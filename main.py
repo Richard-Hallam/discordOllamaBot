@@ -208,6 +208,12 @@ async def setsave(ctx, *, save_file):
     check_and_create_db(saveName)
     await ctx.send(f"Save file set to {save_file}")
 
+
+@bot.command(description="returns active save file")
+async def getsave(ctx):
+    await ctx.send(f"Active save file is {saveName}")
+
+
 bot.run(getApiKey('config.txt'))
 
 
