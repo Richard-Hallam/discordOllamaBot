@@ -19,6 +19,10 @@ To deploy this project download it and run main.py after putting your api key in
 
 ## Feature to be implimented
 
+-autosave
+-switchable save files
+-ability to list installed models
+
 
 
 
