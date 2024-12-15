@@ -57,6 +57,10 @@ db_conversation_history = []
 #activates autosave
 autosave = False
 
+#name of the savefile for the role
+saveName = 'ollamaDCBot.db'
+
+
 @bot.command(description="tests bot is getting commands")
 async def ping(ctx):
     await ctx.send('pong')
@@ -120,6 +124,7 @@ async def setrole(ctx, *, role):
         'role': 'system',
         'content': role,
     })
+    write_indiviual_entry_to_db(ctx.author.id, 'system', role, saveName)
     await ctx.send(f"Role set: {role}")
 
 
@@ -162,6 +167,9 @@ async def autosave(ctx):
     else:
         autosave = False
     await ctx.send(f"Autosave toggled to {autosave}")
+
+
+
 
 bot.run(getApiKey('config.txt'))
 
