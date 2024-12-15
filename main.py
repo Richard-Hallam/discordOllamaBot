@@ -55,11 +55,14 @@ conversation_history = []
 db_conversation_history = []
 
 #activates autosave
-autosave = False
+autosave = True
 
 #name of the savefile for the role
-saveName = 'ollamaDCBot.db'
+# saveName = 'ollamaDCBot.db'
+saveName = 'temp.db'
 
+#check if the database exists
+check_and_create_db(saveName)
 
 @bot.command(description="tests bot is getting commands")
 async def ping(ctx):
@@ -80,8 +83,10 @@ async def changemodel(ctx, *, model_name):
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
     user_id = ctx.author.id
-    if autosave == True:
-        write_indiviual_entry_to_db(user_id, 'user', msg, 'ollamaDCBot.db')
+    print(autosave)
+    if autosave:
+        print(saveName)
+        write_indiviual_entry_to_db(user_id, 'user', msg, saveName)
     conversation_history.append({
         'user_id': user_id,
         'role': 'user',
@@ -94,8 +99,8 @@ async def prompt(ctx, *, msg):
         'role': 'assistant',
         'content': response,
     })
-    if autosave == True:
-        write_indiviual_entry_to_db(user_id, 'asistant', response, 'ollamaDCBot.db')
+    if autosave:
+        write_indiviual_entry_to_db(user_id, 'asistant', response, saveName)
     if len(response) > 2000:
         split_response = split_long_response(response)
         for i in split_response:
@@ -140,7 +145,7 @@ async def clearhistory(ctx):
 
 @bot.command(description="saves the conversation history to the database")
 async def savehistory(ctx):
-    write_conversation_history_to_db(conversation_history, 'ollamaDCBot.db')
+    write_conversation_history_to_db(conversation_history, saveName)
     await ctx.send("Conversation history saved to the database")
 
 
