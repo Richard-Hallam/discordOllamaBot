@@ -6949,3 +6949,5 @@ config.txt
 rag/.env
 bot_data.db
 
+ollamaDCBot.db
+ollamaDCBot.db
