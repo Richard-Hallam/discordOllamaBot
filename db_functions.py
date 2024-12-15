@@ -34,3 +34,11 @@ def read_conversation_history_from_db(db_path):
     rows = c.fetchall()
     conn.close()
     return rows
+
+
+def write_indiviual_entry_to_db(user_id, role, content, db_path):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("INSERT INTO conversation_history VALUES (?, ?, ?)", (user_id, role, content))
+    conn.commit()
+    conn.close()

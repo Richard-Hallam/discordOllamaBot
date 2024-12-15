@@ -5,7 +5,7 @@ import ollama
 import time
 import json
 import sqlite3
-from db_functions import check_and_create_db, write_conversation_history_to_db, read_conversation_history_from_db
+from db_functions import check_and_create_db, write_conversation_history_to_db, read_conversation_history_from_db, write_indiviual_entry_to_db
 
 def getApiKey(filename):
     with open(filename) as f:
@@ -54,6 +54,13 @@ conversation_history = []
 #list to store the conversation history that is loaded from the database
 db_conversation_history = []
 
+#activates autosave
+autosave = False
+
+#name of the savefile for the role
+saveName = 'ollamaDCBot.db'
+
+
 @bot.command(description="tests bot is getting commands")
 async def ping(ctx):
     await ctx.send('pong')
@@ -73,7 +80,8 @@ async def changemodel(ctx, *, model_name):
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
     user_id = ctx.author.id
-
+    if autosave == True:
+        write_indiviual_entry_to_db(user_id, 'user', msg, 'ollamaDCBot.db')
     conversation_history.append({
         'user_id': user_id,
         'role': 'user',
@@ -86,7 +94,8 @@ async def prompt(ctx, *, msg):
         'role': 'assistant',
         'content': response,
     })
-    print(response)
+    if autosave == True:
+        write_indiviual_entry_to_db(user_id, 'asistant', response, 'ollamaDCBot.db')
     if len(response) > 2000:
         split_response = split_long_response(response)
         for i in split_response:
@@ -115,6 +124,7 @@ async def setrole(ctx, *, role):
         'role': 'system',
         'content': role,
     })
+    write_indiviual_entry_to_db(ctx.author.id, 'system', role, saveName)
     await ctx.send(f"Role set: {role}")
 
 
@@ -147,6 +157,17 @@ async def loadhistory(ctx):
         'content': line[2],
     })
     await ctx.send("Conversation history loaded from the database")
+
+
+@bot.command(description="Toggles autosave")
+async def autosave(ctx):
+    global autosave
+    if autosave == False:
+        autosave = True
+    else:
+        autosave = False
+    await ctx.send(f"Autosave toggled to {autosave}")
+
 
 
 
