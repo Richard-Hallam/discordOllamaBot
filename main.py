@@ -17,7 +17,6 @@ def getApiKey(filename):
 def split_long_response(response_to_process):
     split_response = []
     response_to_process_length = len(response_to_process)
-    print(response_to_process)
     response = str(response_to_process)
     while len(response_to_process) > 2000:
         split_response.append(response_to_process[0:1999])
@@ -29,7 +28,6 @@ def split_long_response(response_to_process):
 async def get_response(messages, modelToUse):
     """Passes command content to ollama
        To implement models"""
-    print(modelToUse)
     try:
         response = ollama.chat(model=modelToUse, messages=messages)
     except Exception as e:
@@ -96,9 +94,7 @@ async def changemodel(ctx, *, model_name):
 @bot.command(description="prompts llm")
 async def prompt(ctx, *, msg):
     user_id = ctx.author.id
-    print(autosave)
     if autosave:
-        print(saveName)
         write_indiviual_entry_to_db(user_id, 'user', msg, saveName)
     conversation_history.append({
         'user_id': user_id,
@@ -112,13 +108,11 @@ async def prompt(ctx, *, msg):
         'role': 'assistant',
         'content': response,
     })
-    response = saveName.replace('.db', '') + ': ' + response
     if autosave:
         write_indiviual_entry_to_db(user_id, 'asistant', response, saveName)
     if len(response) > 2000:
         split_response = split_long_response(response)
         for i in split_response:
-            print(len(i))
             await ctx.send(i)
         time.sleep(10)
     if len(response) < 2000:

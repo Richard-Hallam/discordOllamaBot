@@ -12,7 +12,7 @@ def check_and_create_db( db_file):
         c.execute('''CREATE TABLE IF NOT EXISTS conversation_history
             (user_id text, role text, content text)''')
         conn.close()
-        return(f"Database { db_file} created.")
+        print(f"Database { db_file} created.")
     else:
         print(f"Database  { db_file} already exists ")
 
@@ -35,7 +35,6 @@ def write_conversation_history_to_db(conversation_history,  db_file):
 
 def read_conversation_history_from_db( db_file):
     db_file= db_file + '.db'
-    print(db_file)
     conn = sqlite3.connect( db_file)
     c = conn.cursor()
     c.execute("SELECT * FROM conversation_history")
