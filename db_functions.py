@@ -32,3 +32,13 @@ def read_conversation_history_from_db(db_path):
     rows = c.fetchall()
     conn.close()
     return rows
+
+
+def log_event_to_db(event, db_path):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS event_log
+                 (event text)''')
+    c.execute("INSERT INTO event_log VALUES (?)", (event,))
+    conn.commit()
+    conn.close()
